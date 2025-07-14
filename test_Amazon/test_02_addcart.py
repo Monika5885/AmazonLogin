@@ -9,14 +9,15 @@ class TestRandomAddCart:
     def test_add_random_laptop_to_cart(self):
         util = ReusableMethod(self.driver)
         page = AddCartPage(self.driver, util)
+        login = LoginPage(self.driver, util)
+        login.login(util.getusername(config), util.getpassword(config))
 
-        self.driver.get("https://www.amazon.in")
         page.handle_continue_shopping_popup()
-        page.search_laptop()
+        page.search_laptop("laptop")
         time.sleep(10)
-        if "robot" in self.driver.page_source:
-            pytest.fail("CAPTCHA detected. Cannot proceed.")
-            time.sleep(10)
+        if page.is_captcha_present():
+            util.capture_screenshots("captcha_detected")
+            pytest.skip("CAPTCHA shown")
         page.apply_random_brand_filter()
         time.sleep(8)
 
